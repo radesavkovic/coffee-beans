@@ -1,0 +1,17 @@
+[features]
+seeds = false
+[programs.localnet]
+baked_beans = "557BPiUp8WSumh7PcLpXE12VZppRhiezdHRdfhKAVANn"
+
+[programs.devnet]
+baked_beans = "557BPiUp8WSumh7PcLpXE12VZppRhiezdHRdfhKAVANn"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "testnet"
+wallet = "/root/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
