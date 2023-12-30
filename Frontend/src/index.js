@@ -12,11 +12,11 @@ import { ContractProvider } from "./providers/ContractProvider";
 ReactDOM.render(
   <>
     <CssBaseline />
-      <ThemeProvider>
-        <ContractProvider>
-          <App />
-        </ContractProvider>
-      </ThemeProvider>
+    <ThemeProvider>
+      <ContractProvider>
+        <App />
+      </ContractProvider>
+    </ThemeProvider>
   </>,
   document.getElementById("root")
 );

@@ -37,7 +37,7 @@ export default function ReferralLink({ address }) {
           marginTop={2}
           paddingX={3}
         >
-          Earn 12% of the SOL used to roast beans from anyone who uses your
+          Earn 12% of the ROOG used to buy shares from anyone who uses your
           referral link
         </Typography>
       </CardContent>

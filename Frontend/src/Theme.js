@@ -3,13 +3,13 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#17215E",
+      main: "#1a1a1a",
     },
     secondary: {
-      main: "#f4b52d",
+      main: "#ed8200",
     },
     text: {
-      primary: "#17215E",
+      primary: "#1a1a1a",
     },
   },
   typography: {
@@ -61,7 +61,7 @@ const theme = createTheme({
           boxShadow: "6px 6px 20px 6px #00000096",
         },
         containedSecondary: {
-          color: "#17215E",
+          color: "#ff9d26",
         },
       },
     },

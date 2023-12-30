@@ -21,8 +21,8 @@ import {
   getWalletSolBalance,
   getVaultSolBalance,
   getUserData,
-  getGlobalStateData
-} from "../../contracts/bean"
+  getGlobalStateData,
+} from "../../contracts/bean";
 
 const CardWrapper = styled(Card)({
   background: "transparent",
@@ -41,8 +41,8 @@ const ButtonContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const UnderlinedGrid = styled(Grid)(() => ({
-  borderBottom: '1px solid black'
-}))
+  borderBottom: "1px solid black",
+}));
 
 export default function BakeCard() {
   function useQuery() {
@@ -63,13 +63,13 @@ export default function BakeCard() {
   const [adminKey, setAdminKey] = useState(null);
 
   useEffect(() => {
-    getWalletSolBalance(wallet).then(bal => {
+    getWalletSolBalance(wallet).then((bal) => {
       console.log("getWalletSolBalance bal=", bal);
       setWalletSolBalance(bal);
     });
-    getUserData(wallet).then(data => {
+    getUserData(wallet).then((data) => {
       if (data !== null) {
-        console.log('userData =', data);
+        console.log("userData =", data);
         setBeanRewards(data.beanRewards);
         setMinersCount(data.miners);
       } else {
@@ -77,15 +77,15 @@ export default function BakeCard() {
         setMinersCount("0");
       }
     });
-    getGlobalStateData(wallet).then(data => {
+    getGlobalStateData(wallet).then((data) => {
       if (data != null) {
         setAdminKey(data.authority);
       }
-    })
+    });
   }, [wallet, dataUpdate]);
 
   useEffect(() => {
-    getVaultSolBalance(wallet).then(bal => {
+    getVaultSolBalance(wallet).then((bal) => {
       setContractSolBalance(bal);
     });
   }, [wallet, dataUpdate]);
@@ -98,7 +98,7 @@ export default function BakeCard() {
 
   const toggleDataUpdate = () => {
     setDataUpdate(!dataUpdate);
-  }
+  };
 
   const onUpdateBakeSOL = (value) => {
     setBakeSOL(value);
@@ -107,9 +107,8 @@ export default function BakeCard() {
     const ref = query.get("ref");
     return ref;
   };
-  
+
   const initializeProgram = async () => {
-    
     setLoading(true);
     try {
       await initialize(wallet);
@@ -148,7 +147,6 @@ export default function BakeCard() {
     }
     setLoading(false);
     toggleDataUpdate();
-    
   };
 
   const eatBeans = async () => {
@@ -174,7 +172,7 @@ export default function BakeCard() {
           mt={3}
         >
           <Typography variant="body1">Contract</Typography>
-          <Typography variant="h5">{contractSolBalance} SOL</Typography>
+          <Typography variant="h5">{contractSolBalance} ROOG</Typography>
         </UnderlinedGrid>
         <UnderlinedGrid
           container
@@ -183,7 +181,7 @@ export default function BakeCard() {
           mt={3}
         >
           <Typography variant="body1">Wallet</Typography>
-          <Typography variant="h5">{walletSolBalance} SOL</Typography>
+          <Typography variant="h5">{walletSolBalance} ROOG</Typography>
         </UnderlinedGrid>
         <UnderlinedGrid
           container
@@ -191,8 +189,8 @@ export default function BakeCard() {
           alignItems="center"
           mt={3}
         >
-          <Typography variant="body1">Your Beans</Typography>
-          <Typography variant="h5">{minersCount} BEANS</Typography>
+          <Typography variant="body1">Your Shares</Typography>
+          <Typography variant="h5">{minersCount} SHARES</Typography>
         </UnderlinedGrid>
         <Box paddingTop={4} paddingBottom={3}>
           <Box>
@@ -202,7 +200,7 @@ export default function BakeCard() {
               onChange={(value) => onUpdateBakeSOL(value)}
             />
           </Box>
-          
+
           <Box marginTop={3} marginBottom={3}>
             <Button
               variant="contained"
@@ -223,7 +221,7 @@ export default function BakeCard() {
               onClick={bake}
               className="custom-button"
             >
-              ROAST BEANS
+              Buy Shares
             </Button>
           </Box>
           <Divider />
@@ -237,7 +235,7 @@ export default function BakeCard() {
               Your Rewards
             </Typography>
             <Typography variant="h5" fontWeight="bolder">
-              {beanRewards} SOL
+              {beanRewards} ROOG
             </Typography>
           </Grid>
           <ButtonContainer container>
@@ -250,7 +248,7 @@ export default function BakeCard() {
                 onClick={reBake}
                 className="custom-button"
               >
-                DARK ROAST
+                Compound
               </Button>
             </Grid>
             <Grid item flexGrow={1} marginLeft={1} marginTop={3}>
@@ -262,7 +260,7 @@ export default function BakeCard() {
                 onClick={eatBeans}
                 className="custom-button"
               >
-                BREW COFFEE
+                withdraw
               </Button>
             </Grid>
           </ButtonContainer>
