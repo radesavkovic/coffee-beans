@@ -25,8 +25,6 @@ import {
   getWalletTokenBalance,
 } from "../../contracts/bean";
 
-import * as constants from "../../constants";
-
 const CardWrapper = styled(Card)({
   background: "transparent",
   marginBottom: 24,
