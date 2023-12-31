@@ -22,7 +22,10 @@ import {
   getVaultSolBalance,
   getUserData,
   getGlobalStateData,
+  getWalletTokenBalance,
 } from "../../contracts/bean";
+
+import * as constants from "../../constants";
 
 const CardWrapper = styled(Card)({
   background: "transparent",
@@ -63,8 +66,11 @@ export default function BakeCard() {
   const [adminKey, setAdminKey] = useState(null);
 
   useEffect(() => {
-    getWalletSolBalance(wallet).then((bal) => {
-      console.log("getWalletSolBalance bal=", bal);
+    getWalletTokenBalance(
+      wallet,
+      "8N3ZkCwRe36Cj1PqXaMw2h92yzSy18L1z6sptQMiQGrr"
+    ).then((bal) => {
+      console.log("getWalletTokenBalance bal=", bal);
       setWalletSolBalance(bal);
     });
     getUserData(wallet).then((data) => {

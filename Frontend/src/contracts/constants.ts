@@ -15,10 +15,10 @@ export const DEPOSIT_MINIMUM_AMOUNT = 100;
 // tier starts from 0
 export const DEFAULT_MAX_TIER = 2;
 
-export const NETWORK = "devnet";
+export const NETWORK = "mainnet-beta";
 
 export const PROGRAM_ID = new PublicKey(
-  "557BPiUp8WSumh7PcLpXE12VZppRhiezdHRdfhKAVANn"
+  "FZg4UhJbmeCJCpj3GCx6f1LZeFqt7fUZ2jEFJWx78kwS"
 );
 export const TREASURY = new PublicKey(
   "SRatkWAdtom4oHyvdsHwRPLhKWWABkHQ1tFuJ587HhQ"

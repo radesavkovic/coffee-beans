@@ -24,7 +24,9 @@ import { toast } from "react-toastify";
 import * as keys from "./keys";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 
-const connection = new Connection(clusterApiUrl(Constants.NETWORK));
+const connection = new Connection(
+  "https://jessamyn-wgvw0v-fast-mainnet.helius-rpc.com/"
+);
 export const getProgram = (wallet: any) => {
   let provider = new anchor.Provider(
     connection,
@@ -51,6 +53,41 @@ export const getWalletSolBalance = async (wallet: any): Promise<String> => {
   return new BigNumber(await connection.getBalance(wallet.publicKey))
     .div(LAMPORTS_PER_SOL)
     .toString();
+};
+
+export const getWalletTokenBalance = async (
+  wallet: any,
+  tokenMintAddress: string
+): Promise<string> => {
+  if (!wallet.publicKey) return "0";
+
+  const tokenMintPublicKey = new PublicKey(tokenMintAddress);
+  const walletPublicKey = new PublicKey(wallet.publicKey);
+
+  try {
+    const response = await connection.getParsedTokenAccountsByOwner(
+      walletPublicKey,
+      { mint: tokenMintPublicKey }
+    );
+
+    let balance = new BigNumber(0);
+    for (const account of response.value) {
+      const accountInfo = account.account.data.parsed.info;
+      if (accountInfo.mint === tokenMintAddress) {
+        balance = balance.plus(
+          new BigNumber(accountInfo.tokenAmount.amount).div(
+            10 ** accountInfo.tokenAmount.decimals
+          )
+        );
+      }
+    }
+
+    console.log("Token balance:", balance.toString());
+    return balance.toString();
+  } catch (error) {
+    console.error("Error fetching token balance:", error);
+    return "0";
+  }
 };
 
 export const getVaultSolBalance = async (wallet: any): Promise<String> => {
