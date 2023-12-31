@@ -19,12 +19,13 @@ export default function Header() {
     <Wrapper>
       <img src={logo} alt="" width={"70%"} />
       <Typography variant="h3" marginTop={-3}>
-        ROOG Reward Pool
+        Roog Market
       </Typography>
       <hr />
       <Typography variant="h7" marginTop={-3}>
         <b>
-          The ROOG reward pool with the richest daily return and lowest dev fee.
+          50k (5% of supply) ROOG to start the pool off, up to 8% daily return,
+          12% referral.
         </b>
       </Typography>
       <br />

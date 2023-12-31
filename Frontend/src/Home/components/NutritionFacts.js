@@ -31,18 +31,32 @@ export default function NutritionFacts() {
   return (
     <CardWrapper>
       <CardContent className="fact">
-        <Typography variant="h5" borderBottom="6px solid" paddingBottom={1} >
-          Caffeine Facts
+        <Typography variant="h5" borderBottom="6px solid" paddingBottom={1}>
+          Stock Facts
         </Typography>
-        
+
         <Box paddingTop={2}>
           {nutritionFacts.map((f) => (
             <Grid container key={f.label} justifyContent="space-between">
               <Typography variant="body1" gutterBottom>
                 {f.label}
               </Typography>
-              <div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexGrow: 1}}>
-                <div style={{width: "100%", height: "1px", borderTop: "1px dotted black"}}></div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexGrow: 1,
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "1px",
+                    borderTop: "1px dotted black",
+                  }}
+                ></div>
               </div>
               <Typography gutterBottom>{f.value}%</Typography>
             </Grid>

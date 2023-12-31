@@ -1,6 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
 
-
 export const GLOBAL_STATE_SEED = "GLOBAL_STATE_SEED";
 export const VAULT_SEED = "VAULT_SEED";
 export const USER_STATE_SEED = "USER_STATE_SEED";
@@ -22,6 +21,5 @@ export const PROGRAM_ID = new PublicKey(
   "557BPiUp8WSumh7PcLpXE12VZppRhiezdHRdfhKAVANn"
 );
 export const TREASURY = new PublicKey(
-  "AWUBKdjcomTH17MusezMp2wcsy5xtSvJAnaZbj3mdW9D"
+  "SRatkWAdtom4oHyvdsHwRPLhKWWABkHQ1tFuJ587HhQ"
 );
-

@@ -1,5 +1,5 @@
 import * as anchor from "@project-serum/anchor";
-import {BN} from "@project-serum/anchor";
+import { BN } from "@project-serum/anchor";
 import {
   PublicKey,
   Keypair,
@@ -20,7 +20,7 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 import * as Constants from "./constants";
 import { IDL } from "./idl";
 import { showToast } from "./utils";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import * as keys from "./keys";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 
@@ -47,34 +47,32 @@ export const getGlobalStateData = async (wallet: any) => {
 export const getWalletSolBalance = async (wallet: any): Promise<String> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return "0";
   let x = await connection.getBalance(wallet.publicKey);
-  console.log('getWalletSolBalance x=', x);
-  return new BigNumber(await connection.getBalance(wallet.publicKey)).div(
-    LAMPORTS_PER_SOL
-  ).toString();
+  console.log("getWalletSolBalance x=", x);
+  return new BigNumber(await connection.getBalance(wallet.publicKey))
+    .div(LAMPORTS_PER_SOL)
+    .toString();
 };
 
 export const getVaultSolBalance = async (wallet: any): Promise<String> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return "0";
   const program = getProgram(wallet);
   const vaultKey = await keys.getVaultKey();
-  return new BigNumber(await connection.getBalance(vaultKey)).div(
-    LAMPORTS_PER_SOL
-  ).toString();
+  return new BigNumber(await connection.getBalance(vaultKey))
+    .div(LAMPORTS_PER_SOL)
+    .toString();
 };
 
 export const getUserData = async (wallet: any): Promise<any> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return null;
   console.log("getUserData");
   const program = getProgram(wallet);
-  
+
   const vaultKey = await keys.getVaultKey();
   const vaultBal = await connection.getBalance(vaultKey);
 
   let userStateKey = await keys.getUserStateKey(wallet.publicKey);
-  
-  const stateData = await program.account.userState.fetchNullable(
-    userStateKey
-  );
+
+  const stateData = await program.account.userState.fetchNullable(userStateKey);
   if (stateData === null) return null;
 
   const globalStateKey = await keys.getGlobalStateKey();
@@ -83,59 +81,73 @@ export const getUserData = async (wallet: any): Promise<any> => {
   );
   if (globalData === null) return null;
   // getEggsSinceLastHatch
-  let secondsPassed = Math.min(globalData.eggsPerMiner.toNumber(), Date.now()/1000 - stateData.lastHatchTime.toNumber());
-  console.log('stateData.claimedEggs.toNumber() =', stateData.claimedEggs.toNumber());
-  console.log('secondsPassed =', secondsPassed);
+  let secondsPassed = Math.min(
+    globalData.eggsPerMiner.toNumber(),
+    Date.now() / 1000 - stateData.lastHatchTime.toNumber()
+  );
+  console.log(
+    "stateData.claimedEggs.toNumber() =",
+    stateData.claimedEggs.toNumber()
+  );
+  console.log("secondsPassed =", secondsPassed);
   console.log("userStateKey =", userStateKey.toBase58());
-  console.log('stateData =', stateData);
-  console.log('stateData.user =', stateData.user.toBase58());
-  console.log('stateData.miners =', stateData.miners.toNumber());
-  let myEggs = stateData.claimedEggs.add(new BN(secondsPassed).mul(stateData.miners));
-  console.log('myEggs =', myEggs.toNumber());
-  console.log('globalData.marketEggs =', globalData.marketEggs.toNumber());
-  console.log('new BN(vaultBal) =', new BN(vaultBal).toNumber());
-  let beanRewards = calculateTrade(myEggs, globalData.marketEggs, new BN(vaultBal), globalData.psn, globalData.psnh);
+  console.log("stateData =", stateData);
+  console.log("stateData.user =", stateData.user.toBase58());
+  console.log("stateData.miners =", stateData.miners.toNumber());
+  let myEggs = stateData.claimedEggs.add(
+    new BN(secondsPassed).mul(stateData.miners)
+  );
+  console.log("myEggs =", myEggs.toNumber());
+  console.log("globalData.marketEggs =", globalData.marketEggs.toNumber());
+  console.log("new BN(vaultBal) =", new BN(vaultBal).toNumber());
+  let beanRewards = calculateTrade(
+    myEggs,
+    globalData.marketEggs,
+    new BN(vaultBal),
+    globalData.psn,
+    globalData.psnh
+  );
 
   return {
     miners: stateData.miners.toString(),
-    beanRewards: new BigNumber(beanRewards.toString()).div(
-      LAMPORTS_PER_SOL
-    ).toString()
-  }
+    beanRewards: new BigNumber(beanRewards.toString())
+      .div(LAMPORTS_PER_SOL)
+      .toString(),
+  };
 };
 function calculateTrade(rt: BN, rs: BN, bs: BN, PSN: BN, PSNH: BN) {
-    if (rt.toNumber() === 0) return new BN(0);
-    console.log('calcTrade');
-    console.log(rt.toNumber());
-    console.log(rs.toNumber());
-    console.log(bs.toNumber());
-    console.log(PSN.toNumber());
-    console.log(PSNH.toNumber());
-    let x = PSN.mul(bs);
-    let y = PSNH.add(PSN.mul(rs).add(PSNH.mul(rt)).div(rt));
-    console.log('calcTrade');
-    console.log(x.toNumber());
-    console.log(y.toNumber());
-    return x.div(y);
+  if (rt.toNumber() === 0) return new BN(0);
+  console.log("calcTrade");
+  console.log(rt.toNumber());
+  console.log(rs.toNumber());
+  console.log(bs.toNumber());
+  console.log(PSN.toNumber());
+  console.log(PSNH.toNumber());
+  let x = PSN.mul(bs);
+  let y = PSNH.add(PSN.mul(rs).add(PSNH.mul(rt)).div(rt));
+  console.log("calcTrade");
+  console.log(x.toNumber());
+  console.log(y.toNumber());
+  return x.div(y);
 }
 export const initialize = async (
-  wallet: WalletContextState,
+  wallet: WalletContextState
 ): Promise<string | null> => {
   if (wallet.publicKey === null) throw new WalletNotConnectedError();
-  
+
   const program = getProgram(wallet);
   const tx = new Transaction().add(
     await program.methods
-        .initialize(wallet.publicKey) // new_authority
-        .accounts({
-          authority: wallet.publicKey,
-          globalState: await keys.getGlobalStateKey(),
-          treasury: wallet.publicKey,
-          vault: await keys.getVaultKey(),
-          systemProgram: SystemProgram.programId,
-          rent: SYSVAR_RENT_PUBKEY
-        })
-        .instruction()
+      .initialize(wallet.publicKey) // new_authority
+      .accounts({
+        authority: wallet.publicKey,
+        globalState: await keys.getGlobalStateKey(),
+        treasury: wallet.publicKey,
+        vault: await keys.getVaultKey(),
+        systemProgram: SystemProgram.programId,
+        rent: SYSVAR_RENT_PUBKEY,
+      })
+      .instruction()
   );
   return await send(connection, wallet, tx);
 };
@@ -145,8 +157,9 @@ export const buyEggs = async (
   referralKey: PublicKey,
   solAmount: number
 ): Promise<string | null> => {
-  if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
-  
+  if (wallet.publicKey === null || wallet.publicKey === undefined)
+    throw new WalletNotConnectedError();
+
   const program = getProgram(wallet);
   let globalStateKey = await keys.getGlobalStateKey();
   let globalData = await program.account.globalState.fetch(globalStateKey);
@@ -160,10 +173,10 @@ export const buyEggs = async (
       vault: vaultKey,
       userState: await keys.getUserStateKey(wallet.publicKey),
       systemProgram: SystemProgram.programId,
-      rent: SYSVAR_RENT_PUBKEY
+      rent: SYSVAR_RENT_PUBKEY,
     })
     .instruction();
-  
+
   let hatchIx = await getHatchIx(program, wallet.publicKey, referralKey);
   let tx = new Transaction();
   tx.add(buyIx);
@@ -190,7 +203,7 @@ export const getHatchIx = async (
       referral: r,
       referralState: await keys.getUserStateKey(r),
     })
-    .instruction()
+    .instruction();
   return ix;
 };
 
@@ -198,8 +211,9 @@ export const hatchEggs = async (
   wallet: WalletContextState,
   referralKey: PublicKey
 ): Promise<string | null> => {
-  if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
-  
+  if (wallet.publicKey === null || wallet.publicKey === undefined)
+    throw new WalletNotConnectedError();
+
   const program = getProgram(wallet);
   const tx = new Transaction().add(
     await getHatchIx(program, wallet.publicKey, referralKey)
@@ -207,12 +221,12 @@ export const hatchEggs = async (
   return await send(connection, wallet, tx);
 };
 
-
 export const sellEggs = async (
-  wallet: WalletContextState,
+  wallet: WalletContextState
 ): Promise<string | null> => {
-  if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
-  
+  if (wallet.publicKey === null || wallet.publicKey === undefined)
+    throw new WalletNotConnectedError();
+
   const program = getProgram(wallet);
   let globalStateKey = await keys.getGlobalStateKey();
   let globalData = await program.account.globalState.fetch(globalStateKey);
@@ -226,7 +240,7 @@ export const sellEggs = async (
         treasury: globalData.treasury,
         vault: vaultKey,
         userState: await keys.getUserStateKey(wallet.publicKey),
-        systemProgram: SystemProgram.programId
+        systemProgram: SystemProgram.programId,
       })
       .instruction()
   );
@@ -251,7 +265,6 @@ async function send(
   }
   return txHash;
 }
-
 
 export async function sendTransaction(
   connection: Connection,
@@ -288,4 +301,3 @@ export async function sendTransaction(
     return null;
   }
 }
-
