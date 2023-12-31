@@ -9,7 +9,7 @@ pub struct UserState {
     pub user: Pubkey,
     // last hatch time
     pub last_hatch_time: u64,
-    pub claimed_eggs: u64,
+    pub claimed_roogs: u64,
     pub miners: u64,
     pub referral: Pubkey,
     pub referral_set: u8,

@@ -34,73 +34,77 @@ export const getProgram = (wallet: any) => {
   const program = new anchor.Program(IDL, Constants.PROGRAM_ID, provider);
   return program;
 };
+
 export const getGlobalStateData = async (wallet: any) => {
   const program = getProgram(wallet);
-  const globalStateKey = await keys.getGlobalStateKey();
-  const stateData = await program.account.globalState.fetchNullable(
-    globalStateKey
-  );
-  if (stateData === null) return null;
-  return stateData;
+  try {
+    const globalStateKey = await keys.getGlobalStateKey();
+    const stateData = await program.account.globalState.fetchNullable(
+      globalStateKey
+    );
+    if (stateData === null) return null;
+    return stateData;
+  } catch {
+    return null;
+  }
 };
 
 export const getWalletSolBalance = async (wallet: any): Promise<String> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return "0";
-  let x = await connection.getBalance(wallet.publicKey);
-  console.log('getWalletSolBalance x=', x);
-  return new BigNumber(await connection.getBalance(wallet.publicKey)).div(
-    LAMPORTS_PER_SOL
-  ).toString();
+  const token = await getTokenBalance(await getAssociatedTokenAccount(wallet.publicKey));
+  return token;
 };
 
 export const getVaultSolBalance = async (wallet: any): Promise<String> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return "0";
-  const program = getProgram(wallet);
   const vaultKey = await keys.getVaultKey();
-  return new BigNumber(await connection.getBalance(vaultKey)).div(
-    LAMPORTS_PER_SOL
-  ).toString();
+  const token = await getTokenBalance(vaultKey);
+  return token;
 };
 
 export const getUserData = async (wallet: any): Promise<any> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return null;
   console.log("getUserData");
-  const program = getProgram(wallet);
-  
-  const vaultKey = await keys.getVaultKey();
-  const vaultBal = await connection.getBalance(vaultKey);
+  try {
+    const program = getProgram(wallet);
+    
+    const vaultKey = await keys.getVaultKey();
+    const vaultBal = await connection.getBalance(vaultKey);
 
-  let userStateKey = await keys.getUserStateKey(wallet.publicKey);
-  
-  const stateData = await program.account.userState.fetchNullable(
-    userStateKey
-  );
-  if (stateData === null) return null;
+    let userStateKey = await keys.getUserStateKey(wallet.publicKey);
+    
+    const stateData = await program.account.userState.fetchNullable(
+      userStateKey
+    );
+    if (stateData === null) return null;
 
-  const globalStateKey = await keys.getGlobalStateKey();
-  const globalData = await program.account.globalState.fetchNullable(
-    globalStateKey
-  );
-  if (globalData === null) return null;
-  // getEggsSinceLastHatch
-  let secondsPassed = Math.min(globalData.eggsPerMiner.toNumber(), Date.now()/1000 - stateData.lastHatchTime.toNumber());
-  console.log('stateData.claimedEggs.toNumber() =', stateData.claimedEggs.toNumber());
-  console.log('secondsPassed =', secondsPassed);
-  console.log("userStateKey =", userStateKey.toBase58());
-  console.log('stateData =', stateData);
-  console.log('stateData.user =', stateData.user.toBase58());
-  console.log('stateData.miners =', stateData.miners.toNumber());
-  let myEggs = stateData.claimedEggs.add(new BN(secondsPassed).mul(stateData.miners));
-  console.log('myEggs =', myEggs.toNumber());
-  console.log('globalData.marketEggs =', globalData.marketEggs.toNumber());
-  console.log('new BN(vaultBal) =', new BN(vaultBal).toNumber());
-  let beanRewards = calculateTrade(myEggs, globalData.marketEggs, new BN(vaultBal), globalData.psn, globalData.psnh);
+    const globalStateKey = await keys.getGlobalStateKey();
+    const globalData = await program.account.globalState.fetchNullable(
+      globalStateKey
+    );
+    if (globalData === null) return null;
+    // getRoogsSinceLastHatch
+    let secondsPassed = Math.min(globalData.roogsPerMiner.toNumber(), Date.now()/1000 - stateData.lastHatchTime.toNumber());
+    console.log('stateData.claimedRoogs.toNumber() =', stateData.claimedRoogs.toNumber());
+    console.log('secondsPassed =', secondsPassed);
+    console.log("userStateKey =", userStateKey.toBase58());
+    console.log('stateData =', stateData);
+    console.log('stateData.user =', stateData.user.toBase58());
+    console.log('stateData.miners =', stateData.miners.toNumber());
+    let myRoogs = stateData.claimedRoogs.add(new BN(secondsPassed).mul(stateData.miners));
+    console.log('myRoogs =', myRoogs.toNumber());
+    console.log('globalData.marketRoogs =', globalData.marketRoogs.toNumber());
+    console.log('new BN(vaultBal) =', new BN(vaultBal).toNumber());
+    let beanRewards = calculateTrade(myRoogs, globalData.marketRoogs, new BN(vaultBal), globalData.psn, globalData.psnh);
 
-  return {
-    miners: stateData.miners.toString(),
-    beanRewards: new BigNumber(beanRewards.toString()).div(
-      LAMPORTS_PER_SOL
-    ).toString()
+    return {
+      miners: stateData.miners.toString(),
+      beanRewards: new BigNumber(beanRewards.toString()).div(
+        LAMPORTS_PER_SOL
+      ).toString()
+    }
+  } catch {
+    return null;
   }
 };
 function calculateTrade(rt: BN, rs: BN, bs: BN, PSN: BN, PSNH: BN) {
@@ -118,20 +122,45 @@ function calculateTrade(rt: BN, rs: BN, bs: BN, PSN: BN, PSNH: BN) {
     console.log(y.toNumber());
     return x.div(y);
 }
+
+async function getTokenBalance(tokenAccount: any): Promise<String> {
+  if (!tokenAccount) return "0";
+  const response = await connection.getAccountInfo(tokenAccount);
+  if (!response) return "0";
+  const info = await connection.getTokenAccountBalance(tokenAccount);
+  if (!info.value.uiAmountString) return "0";
+  return info.value.uiAmountString;
+}
+
+const getAssociatedTokenAccount = async (ownerPubkey: PublicKey): Promise<PublicKey> => {
+  let associatedTokenAccountPubkey = (await PublicKey.findProgramAddress(
+      [
+          ownerPubkey.toBuffer(),
+          Constants.TOKEN_PROGRAM_ID.toBuffer(),
+          Constants.TOKEN_ADDRESS.toBuffer(), // mint address
+      ],
+      Constants.ASSOCIATED_TOKEN_PROGRAM_ID
+  ))[0];
+  return associatedTokenAccountPubkey;
+}
+
 export const initialize = async (
   wallet: WalletContextState,
 ): Promise<string | null> => {
-  if (wallet.publicKey === null) throw new WalletNotConnectedError();
+  if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
   
   const program = getProgram(wallet);
   const tx = new Transaction().add(
     await program.methods
-        .initialize(wallet.publicKey) // new_authority
+        .initialize(wallet.publicKey)
         .accounts({
           authority: wallet.publicKey,
           globalState: await keys.getGlobalStateKey(),
-          treasury: wallet.publicKey,
+          treasury: await getAssociatedTokenAccount(wallet.publicKey),
           vault: await keys.getVaultKey(),
+          mint: Constants.TOKEN_ADDRESS,
+          tokenProgram: Constants.TOKEN_PROGRAM_ID,
+          associatedTokenProgram: Constants.ASSOCIATED_TOKEN_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
           rent: SYSVAR_RENT_PUBKEY
         })
@@ -140,10 +169,10 @@ export const initialize = async (
   return await send(connection, wallet, tx);
 };
 
-export const buyEggs = async (
+export const buyRoogs = async (
   wallet: WalletContextState,
   referralKey: PublicKey,
-  solAmount: number
+  tokenAmount: number
 ): Promise<string | null> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
   
@@ -152,13 +181,17 @@ export const buyEggs = async (
   let globalData = await program.account.globalState.fetch(globalStateKey);
   let vaultKey = await keys.getVaultKey();
   let buyIx = await program.methods
-    .buyEggs(new anchor.BN(solAmount * LAMPORTS_PER_SOL))
+    .buyRoogs(new anchor.BN(tokenAmount * Constants.TOKEN_DECIMAL))
     .accounts({
       user: wallet.publicKey,
       globalState: globalStateKey,
       treasury: globalData.treasury,
       vault: vaultKey,
+      mint: Constants.TOKEN_ADDRESS,
       userState: await keys.getUserStateKey(wallet.publicKey),
+      account: await getAssociatedTokenAccount(wallet.publicKey),
+      tokenProgram: Constants.TOKEN_PROGRAM_ID,
+      associatedTokenProgram: Constants.ASSOCIATED_TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,
       rent: SYSVAR_RENT_PUBKEY
     })
@@ -178,23 +211,26 @@ export const getHatchIx = async (
 ): Promise<TransactionInstruction> => {
   let r = referralKey;
   if (referralKey.equals(userKey)) {
-    r = Constants.TREASURY;
+    let globalStateKey = await keys.getGlobalStateKey();
+    let globalData = await program.account.globalState.fetch(globalStateKey);
+    r = globalData.treasury;
   }
   let ix = await program.methods
-    .hatchEggs()
+    .hatchRoogs()
     .accounts({
       user: userKey,
       globalState: await keys.getGlobalStateKey(),
-      vault: await keys.getVaultKey(),
       userState: await keys.getUserStateKey(userKey),
       referral: r,
       referralState: await keys.getUserStateKey(r),
+      SystemProgram: SystemProgram.programId,
+      rent: SYSVAR_RENT_PUBKEY
     })
     .instruction()
   return ix;
 };
 
-export const hatchEggs = async (
+export const hatchRoogs = async (
   wallet: WalletContextState,
   referralKey: PublicKey
 ): Promise<string | null> => {
@@ -208,7 +244,7 @@ export const hatchEggs = async (
 };
 
 
-export const sellEggs = async (
+export const sellRoogs = async (
   wallet: WalletContextState,
 ): Promise<string | null> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
@@ -219,14 +255,17 @@ export const sellEggs = async (
   let vaultKey = await keys.getVaultKey();
   const tx = new Transaction().add(
     await program.methods
-      .sellEggs()
+      .sellRoogs()
       .accounts({
         user: wallet.publicKey,
         globalState: globalStateKey,
         treasury: globalData.treasury,
         vault: vaultKey,
+        mint: Constants.TOKEN_ADDRESS,
         userState: await keys.getUserStateKey(wallet.publicKey),
-        systemProgram: SystemProgram.programId
+        account: await getAssociatedTokenAccount(wallet.publicKey),
+        tokenProgram: Constants.TOKEN_PROGRAM_ID,
+        associatedTokenProgram: Constants.ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .instruction()
   );

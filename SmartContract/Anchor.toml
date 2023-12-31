@@ -1,16 +1,23 @@
+[toolchain]
+
 [features]
 seeds = false
+skip-lint = false
+
 [programs.localnet]
-baked_beans = "557BPiUp8WSumh7PcLpXE12VZppRhiezdHRdfhKAVANn"
+roog_contract = "6NchgAdLqvbXafnsHobsvPsaepA9QDh5ccsWVcbBRojx"
 
 [programs.devnet]
-baked_beans = "557BPiUp8WSumh7PcLpXE12VZppRhiezdHRdfhKAVANn"
+roog_contract = "6NchgAdLqvbXafnsHobsvPsaepA9QDh5ccsWVcbBRojx"
+
+[programs.mainnet]
+roog_contract = "6NchgAdLqvbXafnsHobsvPsaepA9QDh5ccsWVcbBRojx"
 
 [registry]
-url = "https://anchor.projectserum.com"
+url = "https://api.apr.dev"
 
 [provider]
-cluster = "testnet"
+cluster = "mainnet"
 wallet = "/root/.config/solana/id.json"
 
 [scripts]

@@ -1,6 +1,6 @@
-export type BakedBeans = {
+export type RoogContract = {
   "version": "0.1.0",
-  "name": "baked_beans",
+  "name": "roog_contract",
   "instructions": [
     {
       "name": "initialize",
@@ -17,12 +17,27 @@ export type BakedBeans = {
         },
         {
           "name": "treasury",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "vault",
           "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -44,7 +59,7 @@ export type BakedBeans = {
       ]
     },
     {
-      "name": "buyEggs",
+      "name": "buyRoogs",
       "accounts": [
         {
           "name": "user",
@@ -67,8 +82,28 @@ export type BakedBeans = {
           "isSigner": false
         },
         {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "userState",
           "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "account",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -90,7 +125,7 @@ export type BakedBeans = {
       ]
     },
     {
-      "name": "sellEggs",
+      "name": "sellRoogs",
       "accounts": [
         {
           "name": "user",
@@ -99,11 +134,6 @@ export type BakedBeans = {
         },
         {
           "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
@@ -113,12 +143,32 @@ export type BakedBeans = {
           "isSigner": false
         },
         {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "userState",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "systemProgram",
+          "name": "account",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -126,7 +176,7 @@ export type BakedBeans = {
       "args": []
     },
     {
-      "name": "hatchEggs",
+      "name": "hatchRoogs",
       "accounts": [
         {
           "name": "user",
@@ -135,11 +185,6 @@ export type BakedBeans = {
         },
         {
           "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
@@ -195,7 +240,7 @@ export type BakedBeans = {
             "type": "publicKey"
           },
           {
-            "name": "marketEggs",
+            "name": "marketRoogs",
             "type": "u64"
           },
           {
@@ -211,7 +256,7 @@ export type BakedBeans = {
             "type": "u64"
           },
           {
-            "name": "eggsPerMiner",
+            "name": "roogsPerMiner",
             "type": "u64"
           }
         ]
@@ -235,7 +280,7 @@ export type BakedBeans = {
             "type": "u64"
           },
           {
-            "name": "claimedEggs",
+            "name": "claimedRoogs",
             "type": "u64"
           },
           {
@@ -274,13 +319,18 @@ export type BakedBeans = {
       "code": 6003,
       "name": "IncorrectReferral",
       "msg": "Incorrect Referral Pubkey"
+    },
+    {
+      "code": 6004,
+      "name": "IncorrectTokenAddress",
+      "msg": "Incorrect Token Address"
     }
   ]
 };
 
-export const IDL: BakedBeans = {
+export const IDL: RoogContract = {
   "version": "0.1.0",
-  "name": "baked_beans",
+  "name": "roog_contract",
   "instructions": [
     {
       "name": "initialize",
@@ -297,12 +347,27 @@ export const IDL: BakedBeans = {
         },
         {
           "name": "treasury",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "vault",
           "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -324,7 +389,7 @@ export const IDL: BakedBeans = {
       ]
     },
     {
-      "name": "buyEggs",
+      "name": "buyRoogs",
       "accounts": [
         {
           "name": "user",
@@ -347,8 +412,28 @@ export const IDL: BakedBeans = {
           "isSigner": false
         },
         {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "userState",
           "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "account",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -370,7 +455,7 @@ export const IDL: BakedBeans = {
       ]
     },
     {
-      "name": "sellEggs",
+      "name": "sellRoogs",
       "accounts": [
         {
           "name": "user",
@@ -379,11 +464,6 @@ export const IDL: BakedBeans = {
         },
         {
           "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
@@ -393,12 +473,32 @@ export const IDL: BakedBeans = {
           "isSigner": false
         },
         {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "userState",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "systemProgram",
+          "name": "account",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -406,7 +506,7 @@ export const IDL: BakedBeans = {
       "args": []
     },
     {
-      "name": "hatchEggs",
+      "name": "hatchRoogs",
       "accounts": [
         {
           "name": "user",
@@ -415,11 +515,6 @@ export const IDL: BakedBeans = {
         },
         {
           "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
@@ -475,7 +570,7 @@ export const IDL: BakedBeans = {
             "type": "publicKey"
           },
           {
-            "name": "marketEggs",
+            "name": "marketRoogs",
             "type": "u64"
           },
           {
@@ -491,7 +586,7 @@ export const IDL: BakedBeans = {
             "type": "u64"
           },
           {
-            "name": "eggsPerMiner",
+            "name": "roogsPerMiner",
             "type": "u64"
           }
         ]
@@ -515,7 +610,7 @@ export const IDL: BakedBeans = {
             "type": "u64"
           },
           {
-            "name": "claimedEggs",
+            "name": "claimedRoogs",
             "type": "u64"
           },
           {
@@ -554,6 +649,11 @@ export const IDL: BakedBeans = {
       "code": 6003,
       "name": "IncorrectReferral",
       "msg": "Incorrect Referral Pubkey"
+    },
+    {
+      "code": 6004,
+      "name": "IncorrectTokenAddress",
+      "msg": "Incorrect Token Address"
     }
   ]
 };

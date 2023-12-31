@@ -1,6 +1,6 @@
-use crate::{constants::*, error::*, states::*};
+use crate::{constants::*, states::*, errors::*};
 use anchor_lang::prelude::*;
-use solana_program::{program::invoke, system_instruction};
+use anchor_spl::{token::{TokenAccount, Mint, Token}, associated_token::AssociatedToken};
 use std::mem::size_of;
 
 #[derive(Accounts)]
@@ -17,17 +17,29 @@ pub struct Initialize<'info> {
     )]
     pub global_state: Account<'info, GlobalState>,
 
-    /// CHECK: this should be set by admin
-    pub treasury: AccountInfo<'info>,
+    #[account(
+        init_if_needed,
+        payer = authority,
+        associated_token::mint = mint,
+        associated_token::authority = authority,
+    )]
+    pub treasury: Account<'info, TokenAccount>,
 
     #[account(
-        mut,
-        seeds = [VAULT_SEED],
-        bump
+        init_if_needed,
+        payer = authority,
+        seeds = [VAULT_SEED, mint.key().as_ref()],
+        bump,
+        token::mint = mint,
+        token::authority = global_state
     )]
-    /// CHECK: this should be set by admin
-    pub vault: AccountInfo<'info>,
+    pub vault: Account<'info, TokenAccount>,
 
+    #[account(mut)]
+    pub mint: Account<'info, Mint>,
+
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
@@ -37,7 +49,7 @@ impl<'info> Initialize<'info> {
         if self.global_state.is_initialized == 1 {
             require!(
                 self.global_state.authority.eq(&self.authority.key()),
-                BeanError::NotAllowedAuthority
+                RoogError::NotAllowedAuthority
             )
         }
         Ok(())
@@ -48,37 +60,19 @@ impl<'info> Initialize<'info> {
 /// to init global state with some data for validation
 ///
 #[access_control(ctx.accounts.validate())]
-pub fn handle(ctx: Context<Initialize>, new_authority: Pubkey) -> Result<()> {
+pub fn initialize_handle(ctx: Context<Initialize>, new_authority: Pubkey) -> Result<()> {
     let accts = ctx.accounts;
+    require!(accts.mint.key().to_string() == String::from(TOKEN_ADDRESS), RoogError::IncorrectTokenAddress);
     accts.global_state.is_initialized = 1;
     accts.global_state.authority = new_authority;
     accts.global_state.vault = accts.vault.key();
     accts.global_state.treasury = accts.treasury.key();
 
-    accts.global_state.market_eggs = 108000000000;
+    accts.global_state.market_roogs = 108000000000;
     accts.global_state.dev_fee = 300; // means 3%
     accts.global_state.psn = 10000;
     accts.global_state.psnh = 5000;
-    accts.global_state.eggs_per_miner = 1080000;
+    accts.global_state.roogs_per_miner = 1080000;
 
-    let rent = Rent::default();
-    let required_lamports = rent
-        .minimum_balance(0)
-        .max(1)
-        .saturating_sub(accts.vault.to_account_info().lamports());
-    msg!("required lamports = {:?}", required_lamports);
-    invoke(
-        &system_instruction::transfer(
-            &accts.authority.key(),
-            &accts.vault.key(),
-            required_lamports,
-        ),
-        &[
-            accts.authority.to_account_info().clone(),
-            accts.vault.clone(),
-            accts.system_program.to_account_info().clone(),
-        ],
-    )?;
-    //Err(BeanError::NotAllowedAuthority.into())
     Ok(())
 }

@@ -4,6 +4,7 @@ import {
   VAULT_SEED,
   USER_STATE_SEED,
   PROGRAM_ID,
+  TOKEN_ADDRESS,
 } from "./constants";
 
 export const getGlobalStateKey = async () => {
@@ -16,7 +17,7 @@ export const getGlobalStateKey = async () => {
 
 export const getVaultKey = async () => {
   const [vaultKey] = await asyncGetPda(
-    [Buffer.from(VAULT_SEED)],
+    [Buffer.from(VAULT_SEED), TOKEN_ADDRESS.toBuffer()],
     PROGRAM_ID
   );
   return vaultKey;

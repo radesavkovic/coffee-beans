@@ -12,11 +12,11 @@ pub struct GlobalState {
     // treasury
     pub treasury: Pubkey,
     // todo: should be set as 108000000000
-    pub market_eggs: u64,
+    pub market_roogs: u64,
 
     // these are constants
     pub dev_fee: u64,
     pub psn: u64,
     pub psnh: u64,
-    pub eggs_per_miner: u64,
+    pub roogs_per_miner: u64,
 }
