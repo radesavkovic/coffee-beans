@@ -1,6 +1,7 @@
 {
   "name": "practice",
   "version": "0.1.0",
+  "node": "20.9.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.8.1",
