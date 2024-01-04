@@ -106,8 +106,9 @@ export const getUserData = async (wallet: any): Promise<any> => {
   try {
     const program = getProgram(wallet);
     
-    const vaultKey = await keys.getVaultKey();
-    const vaultBal = await connection.getBalance(vaultKey);
+    const vaultBal = await getVaultSolBalance(wallet);
+    // const vaultKey = await keys.getVaultKey();
+    // const vaultBal = await connection.getBalance(vaultKey);
 
     let userStateKey = await keys.getUserStateKey(wallet.publicKey);
     
