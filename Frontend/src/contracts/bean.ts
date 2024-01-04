@@ -54,7 +54,7 @@ export const getGlobalStateData = async (wallet: any) => {
 
 export const getWalletSolBalance = async (wallet: any): Promise<String> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return "0";
-  const token = await getTokenBalance(await getAssociatedTokenAccount(wallet.publicKey));
+  const token = await getTokenBalance(await getAssociatedTokenAccount(wallet.publicKey), true);
   return token;
 };
 
@@ -96,7 +96,7 @@ export const getWalletTokenBalance = async (
 export const getVaultSolBalance = async (wallet: any): Promise<String> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return "0";
   const vaultKey = await keys.getVaultKey();
-  const token = await getTokenBalance(vaultKey);
+  const token = await getTokenBalance(vaultKey, true);
   return token;
 };
 
@@ -106,10 +106,13 @@ export const getUserData = async (wallet: any): Promise<any> => {
   try {
     const program = getProgram(wallet);
     
-    const vaultBal = (await getVaultSolBalance(wallet)).toString();
+    // const vaultBal = (await getVaultSolBalance(wallet)).toString();
     // const vaultKey = await keys.getVaultKey();
     // const vaultBal = await connection.getBalance(vaultKey);
-
+    const vaultKey = await keys.getVaultKey();
+    const vaultBal = (await getTokenBalance(vaultKey, false)).toString();
+    // console.log("vaultBal: ", vaultBal)
+  
     let userStateKey = await keys.getUserStateKey(wallet.publicKey);
     
     const stateData = await program.account.userState.fetchNullable(
@@ -147,28 +150,33 @@ export const getUserData = async (wallet: any): Promise<any> => {
   }
 };
 function calculateTrade(rt: BN, rs: BN, bs: BN, PSN: BN, PSNH: BN) {
-  if (rt.toNumber() === 0) return new BN(0);
+  if (rt.toString() === "0") return new BN(0);
   console.log("calcTrade");
-  console.log(rt.toNumber());
-  console.log(rs.toNumber());
-  console.log(bs.toNumber());
-  console.log(PSN.toNumber());
-  console.log(PSNH.toNumber());
+  console.log(rt.toString());
+  console.log(rs.toString());
+  console.log(bs.toString());
+  console.log(PSN.toString());
+  console.log(PSNH.toString());
   let x = PSN.mul(bs);
   let y = PSNH.add(PSN.mul(rs).add(PSNH.mul(rt)).div(rt));
   console.log("calcTrade");
-  console.log(x.toNumber());
-  console.log(y.toNumber());
+  console.log(x.toString());
+  console.log(y.toString());
   return x.div(y);
 }
 
-async function getTokenBalance(tokenAccount: any): Promise<String> {
+async function getTokenBalance(tokenAccount: any, isUi: boolean): Promise<String> {
   if (!tokenAccount) return "0";
   const response = await connection.getAccountInfo(tokenAccount);
   if (!response) return "0";
   const info = await connection.getTokenAccountBalance(tokenAccount);
-  if (!info.value.uiAmountString) return "0";
-  return info.value.uiAmountString;
+  if (isUi) {
+    if (!info.value.uiAmountString) return "0";
+    return info.value.uiAmountString;
+  } else {
+    if (!info.value.amount) return "0";
+    return info.value.amount;
+  }
 }
 
 const getAssociatedTokenAccount = async (ownerPubkey: PublicKey): Promise<PublicKey> => {

@@ -207,7 +207,7 @@ export default function BakeCard() {
               variant="contained"
               fullWidth
               onClick={initializeProgram}
-              // hidden
+              hidden
               className="custom-button"
             >
               Init
