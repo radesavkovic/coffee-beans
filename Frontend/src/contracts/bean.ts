@@ -59,6 +59,41 @@ export const getWalletSolBalance = async (wallet: any): Promise<String> => {
   return token;
 };
 
+export const getWalletTokenBalance = async (
+  wallet: any,
+  tokenMintAddress: string
+): Promise<string> => {
+  if (!wallet.publicKey) return "0";
+
+  const tokenMintPublicKey = new PublicKey(tokenMintAddress);
+  const walletPublicKey = new PublicKey(wallet.publicKey);
+
+  try {
+    const response = await connection.getParsedTokenAccountsByOwner(
+      walletPublicKey,
+      { mint: tokenMintPublicKey }
+    );
+
+    let balance = new BigNumber(0);
+    for (const account of response.value) {
+      const accountInfo = account.account.data.parsed.info;
+      if (accountInfo.mint === tokenMintAddress) {
+        balance = balance.plus(
+          new BigNumber(accountInfo.tokenAmount.amount).div(
+            10 ** accountInfo.tokenAmount.decimals
+          )
+        );
+      }
+    }
+
+    console.log("Token balance:", balance.toString());
+    return balance.toString();
+  } catch (error) {
+    console.error("Error fetching token balance:", error);
+    return "0";
+  }
+};
+
 export const getVaultSolBalance = async (wallet: any): Promise<String> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) return "0";
   const vaultKey = await keys.getVaultKey();

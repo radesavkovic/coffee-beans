@@ -1,0 +1,1 @@
+web: cd Frontend && npm run start 
