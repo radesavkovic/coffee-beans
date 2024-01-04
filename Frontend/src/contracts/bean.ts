@@ -1,5 +1,5 @@
 import * as anchor from "@project-serum/anchor";
-import {BN} from "@project-serum/anchor";
+import { BN } from "@project-serum/anchor";
 import {
   PublicKey,
   Keypair,
@@ -20,11 +20,15 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 import * as Constants from "./constants";
 import { IDL } from "./idl";
 import { showToast } from "./utils";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import * as keys from "./keys";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 
-const connection = new Connection(clusterApiUrl(Constants.NETWORK));
+//const connection = new Connection(clusterApiUrl(Constants.NETWORK));
+const connection = new Connection(
+  "https://jessamyn-wgvw0v-fast-mainnet.helius-rpc.com/"
+);
+
 export const getProgram = (wallet: any) => {
   let provider = new anchor.Provider(
     connection,
@@ -108,19 +112,19 @@ export const getUserData = async (wallet: any): Promise<any> => {
   }
 };
 function calculateTrade(rt: BN, rs: BN, bs: BN, PSN: BN, PSNH: BN) {
-    if (rt.toNumber() === 0) return new BN(0);
-    console.log('calcTrade');
-    console.log(rt.toNumber());
-    console.log(rs.toNumber());
-    console.log(bs.toNumber());
-    console.log(PSN.toNumber());
-    console.log(PSNH.toNumber());
-    let x = PSN.mul(bs);
-    let y = PSNH.add(PSN.mul(rs).add(PSNH.mul(rt)).div(rt));
-    console.log('calcTrade');
-    console.log(x.toNumber());
-    console.log(y.toNumber());
-    return x.div(y);
+  if (rt.toNumber() === 0) return new BN(0);
+  console.log("calcTrade");
+  console.log(rt.toNumber());
+  console.log(rs.toNumber());
+  console.log(bs.toNumber());
+  console.log(PSN.toNumber());
+  console.log(PSNH.toNumber());
+  let x = PSN.mul(bs);
+  let y = PSNH.add(PSN.mul(rs).add(PSNH.mul(rt)).div(rt));
+  console.log("calcTrade");
+  console.log(x.toNumber());
+  console.log(y.toNumber());
+  return x.div(y);
 }
 
 async function getTokenBalance(tokenAccount: any): Promise<String> {
@@ -145,7 +149,7 @@ const getAssociatedTokenAccount = async (ownerPubkey: PublicKey): Promise<Public
 }
 
 export const initialize = async (
-  wallet: WalletContextState,
+  wallet: WalletContextState
 ): Promise<string | null> => {
   if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
   
@@ -174,8 +178,9 @@ export const buyRoogs = async (
   referralKey: PublicKey,
   tokenAmount: number
 ): Promise<string | null> => {
-  if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
-  
+  if (wallet.publicKey === null || wallet.publicKey === undefined)
+    throw new WalletNotConnectedError();
+
   const program = getProgram(wallet);
   let globalStateKey = await keys.getGlobalStateKey();
   let globalData = await program.account.globalState.fetch(globalStateKey);
@@ -193,10 +198,10 @@ export const buyRoogs = async (
       tokenProgram: Constants.TOKEN_PROGRAM_ID,
       associatedTokenProgram: Constants.ASSOCIATED_TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,
-      rent: SYSVAR_RENT_PUBKEY
+      rent: SYSVAR_RENT_PUBKEY,
     })
     .instruction();
-  
+
   let hatchIx = await getHatchIx(program, wallet.publicKey, referralKey);
   let tx = new Transaction();
   tx.add(buyIx);
@@ -226,7 +231,7 @@ export const getHatchIx = async (
       SystemProgram: SystemProgram.programId,
       rent: SYSVAR_RENT_PUBKEY
     })
-    .instruction()
+    .instruction();
   return ix;
 };
 
@@ -234,8 +239,9 @@ export const hatchRoogs = async (
   wallet: WalletContextState,
   referralKey: PublicKey
 ): Promise<string | null> => {
-  if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
-  
+  if (wallet.publicKey === null || wallet.publicKey === undefined)
+    throw new WalletNotConnectedError();
+
   const program = getProgram(wallet);
   const tx = new Transaction().add(
     await getHatchIx(program, wallet.publicKey, referralKey)
@@ -247,8 +253,9 @@ export const hatchRoogs = async (
 export const sellRoogs = async (
   wallet: WalletContextState,
 ): Promise<string | null> => {
-  if (wallet.publicKey === null || wallet.publicKey === undefined) throw new WalletNotConnectedError();
-  
+  if (wallet.publicKey === null || wallet.publicKey === undefined)
+    throw new WalletNotConnectedError();
+
   const program = getProgram(wallet);
   let globalStateKey = await keys.getGlobalStateKey();
   let globalData = await program.account.globalState.fetch(globalStateKey);
@@ -291,7 +298,6 @@ async function send(
   return txHash;
 }
 
-
 export async function sendTransaction(
   connection: Connection,
   wallet: WalletContextState,
@@ -327,4 +333,3 @@ export async function sendTransaction(
     return null;
   }
 }
-
