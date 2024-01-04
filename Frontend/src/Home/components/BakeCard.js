@@ -64,11 +64,8 @@ export default function BakeCard() {
   const [adminKey, setAdminKey] = useState(null);
 
   useEffect(() => {
-    getWalletTokenBalance(
-      wallet,
-      "8N3ZkCwRe36Cj1PqXaMw2h92yzSy18L1z6sptQMiQGrr"
-    ).then((bal) => {
-      console.log("getWalletTokenBalance bal=", bal);
+    getWalletSolBalance(wallet).then((bal) => {
+      console.log("getWalletSolBalance bal=", bal);
       setWalletSolBalance(bal);
     });
     getUserData(wallet).then((data) => {
@@ -210,7 +207,7 @@ export default function BakeCard() {
               variant="contained"
               fullWidth
               onClick={initializeProgram}
-              hidden
+              // hidden
               className="custom-button"
             >
               Init

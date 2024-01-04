@@ -24,7 +24,6 @@ import { toast } from "react-toastify";
 import * as keys from "./keys";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 
-//const connection = new Connection(clusterApiUrl(Constants.NETWORK));
 const connection = new Connection(
   "https://jessamyn-wgvw0v-fast-mainnet.helius-rpc.com/"
 );
