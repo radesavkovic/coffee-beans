@@ -24,6 +24,7 @@ import {
   getGlobalStateData,
   getWalletTokenBalance,
 } from "../../contracts/bean";
+import { PublicKey } from "@solana/web3.js";
 
 const CardWrapper = styled(Card)({
   background: "transparent",
@@ -106,7 +107,8 @@ export default function BakeCard() {
   };
   const getRef = () => {
     const ref = query.get("ref");
-    return ref;
+    if (ref === null) return null;
+    return new PublicKey(ref);
   };
 
   const initializeProgram = async () => {
